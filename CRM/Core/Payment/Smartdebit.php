@@ -480,7 +480,7 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         if ($frequencyInterval % 3 != 0) {
           // Monthly
           if ($frequencyInterval > 4) {
-            Civi::log()->debug('The maximum monthly collection interval for Smart Debit is 4 months but you specified ' . $frequencyInterval . ' months. 
+            Civi::log()->debug('The maximum monthly collection interval for Smart Debit is 4 months but you specified ' . $frequencyInterval . ' months.
             Resetting to 4 months. If you meant to select a quarterly interval make sure the collection interval is a multiple of 3.');
             $frequencyInterval = 4;
           }
@@ -499,7 +499,7 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
       case 'week':
         // weekly
         if ($frequencyInterval > 4) {
-          Civi::log()->debug('The maximum weekly collection interval for Smart Debit is 4 weeks but you specified ' . $frequencyInterval . ' weeks. 
+          Civi::log()->debug('The maximum weekly collection interval for Smart Debit is 4 weeks but you specified ' . $frequencyInterval . ' weeks.
             Resetting to 4 weeks.');
           $frequencyInterval = 4;
         }
@@ -752,8 +752,8 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
     }
 
     // This allows us to set the contribution to completed if
-    //   "Mark initial contribution as completed" is enabled in smartdebit settings
-    $params['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
+    // "Mark initial contribution as completed" is enabled in smartdebit settings
+    // $params['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
 
     $contributionParams['receive_date'] = $params['start_date'];
     $contributionParams['trxn_id'] = CRM_Smartdebit_DateUtils::getContributionTransactionId($params['trxn_id'], $params['start_date']);
@@ -768,9 +768,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
     $params = array_merge($params, $contributionParams);
 
     // We need to set this to ensure that contributions are set to the correct status
-    if (!empty($params['contribution_status_id'])) {
-      $params['payment_status_id'] = $params['contribution_status_id'];
-    }
+    // if (!empty($params['contribution_status_id'])) {
+    $params['payment_status_id'] = self::getInitialContributionStatus(FALSE);
+    // }
     return $params;
   }
 
