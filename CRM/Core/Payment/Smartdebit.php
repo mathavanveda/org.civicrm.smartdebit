@@ -753,7 +753,7 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
 
     // This allows us to set the contribution to completed if
     //   "Mark initial contribution as completed" is enabled in smartdebit settings
-    $params['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
+    //$params['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
 
     $contributionParams['receive_date'] = $params['start_date'];
     $contributionParams['trxn_id'] = CRM_Smartdebit_DateUtils::getContributionTransactionId($params['trxn_id'], $params['start_date']);
@@ -768,9 +768,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
     $params = array_merge($params, $contributionParams);
 
     // We need to set this to ensure that contributions are set to the correct status
-    if (!empty($params['contribution_status_id'])) {
-      $params['payment_status_id'] = $params['contribution_status_id'];
-    }
+    //if (!empty($params['contribution_status_id'])) {
+      $params['payment_status_id'] = self::getInitialContributionStatus(FALSE);
+    //}
     return $params;
   }
 
