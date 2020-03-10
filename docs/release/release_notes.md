@@ -1,3 +1,19 @@
+## Release 1.35
+*Code moved to https://lab.civicrm.org/extensions/smartdebit*
+
+* Diagnostics now shows all cached collection reports in a collapsible accordion.
+* Fix PHP notices.
+* Update licensing text on files.
+
+## Release 1.34
+
+* Fix: Don't update contribution status when updating recurring contribution during payment (this was preventing completeTransaction from running).
+* Fix sql syntax error (#29) in reconciliation (https://github.com/mathavanveda).
+
+## Release 1.33
+
+* Make sure we respect 'Mark initial contribution as completed' setting.
+
 ## Release 1.32
 
 * Remove option to confirm by post as it's not allowed by Smartdebit (and don't create activity_type_letter on new installs).

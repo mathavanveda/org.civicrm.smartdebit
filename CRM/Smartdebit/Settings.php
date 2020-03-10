@@ -1,4 +1,7 @@
 <?php
+/**
+ * https://civicrm.org/licensing
+ */
 
 use CRM_Smartdebit_ExtensionUtil as E;
 
@@ -11,7 +14,7 @@ class CRM_Smartdebit_Settings {
    * @return string
    */
   public static function getPrefix() {
-    return 'smartdebit_';
+    return E::SHORT_NAME . '_';
   }
 
   /**
@@ -19,7 +22,7 @@ class CRM_Smartdebit_Settings {
    * @return array
    */
   public static function getFilter() {
-    return ['group' => 'smartdebit'];
+    return ['group' => E::SHORT_NAME];
   }
 
   /**

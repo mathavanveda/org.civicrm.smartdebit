@@ -1,27 +1,7 @@
 <?php
-/*--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
-+--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
-+--------------------------------------------------------------------+
- | This file is a part of CiviCRM.                                    |
- |                                                                    |
- | CiviCRM is free software; you can copy, modify, and distribute it  |
- | under the terms of the GNU Affero General Public License           |
- | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
- |                                                                    |
- | CiviCRM is distributed in the hope that it will be useful, but     |
- | WITHOUT ANY WARRANTY; without even the implied warranty of         |
- | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
- | See the GNU Affero General Public License for more details.        |
- |                                                                    |
- | You should have received a copy of the GNU Affero General Public   |
- | License and the CiviCRM Licensing Exception along                  |
- | with this program; if not, contact CiviCRM LLC                     |
- | at info[AT]civicrm[DOT]org. If you have questions about the        |
- | GNU Affero General Public License or the licensing of CiviCRM,     |
- | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
- +-------------------------------------------------------------------*/
+/**
+ * https://civicrm.org/licensing
+ */
 
 /**
  * Class CRM_Core_Payment_Smartdebit
@@ -305,9 +285,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         'title' => E::ts('Account Holder'),
         'cc_field' => TRUE,
         'attributes' => [
-          'size' => 20
-        , 'maxlength' => 18
-        , 'autocomplete' => 'on'
+          'size' => 20,
+          'maxlength' => 18,
+          'autocomplete' => 'on'
         ],
         'is_required' => TRUE,
         'description' => E::ts('Should be no more than 18 characters. Should not include punctuation (e.g. O\'Callaghan should be OCallaghan). First initial and surname is valid. (e.g. D Watson).'),
@@ -319,9 +299,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         'title' => E::ts('Bank Account Number'),
         'cc_field' => TRUE,
         'attributes' => [
-          'size' => 20
-        , 'maxlength' => 8
-        , 'autocomplete' => 'off'
+          'size' => 20,
+          'maxlength' => 8,
+          'autocomplete' => 'off'
         ],
         'is_required' => TRUE,
         'description' => E::ts('8 digits (e.g. 12345678).'),
@@ -333,9 +313,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         'title' => E::ts('Sort Code'),
         'cc_field' => TRUE,
         'attributes' => [
-          'size' => 20
-        , 'maxlength' => 6
-        , 'autocomplete' => 'off'
+          'size' => 20,
+          'maxlength' => 6,
+          'autocomplete' => 'off'
         ],
         'is_required' => TRUE,
         'description' => E::ts('6 digits (e.g. 01 23 45).'),
@@ -363,9 +343,9 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         'title' => 'DDI Reference',
         'cc_field' => TRUE,
         'attributes' => [
-          'size' => 20
-        , 'maxlength' => 64
-        , 'autocomplete' => 'off'
+          'size' => 20,
+          'maxlength' => 64,
+          'autocomplete' => 'off'
         ],
         'is_required' => TRUE,
       ]
@@ -739,8 +719,7 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
    * @throws \Civi\Payment\Exception\PaymentProcessorException
    */
   public function doPayment(&$params, $component = 'contribute') {
-    // Set default contribution status
-    $params['contribution_status_id'] = CRM_Core_PseudoConstant::getKey('CRM_Contribute_BAO_Contribution', 'contribution_status_id', 'Pending');
+    $this->beginDoPayment($params);
 
     $smartDebitParams = self::preparePostArray($params);
     CRM_Smartdebit_Hook::alterVariableDDIParams($params, $smartDebitParams, 'create');
@@ -768,9 +747,13 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
     }
     else {
       $message = CRM_Utils_Array::value('message', $response) . ': ' . CRM_Smartdebit_Api::formatResponseError(CRM_Utils_Array::value('error', $response));
-      Civi::log()->error('Smartdebit::doDirectPayment error: ' . $message . ' ' . print_r($smartDebitParams, TRUE));
+      Civi::log()->error('Smartdebit::doPayment error: ' . $message . ' ' . print_r($smartDebitParams, TRUE));
       throw new \Civi\Payment\Exception\PaymentProcessorException($message, CRM_Utils_Array::value('code', $response), $smartDebitParams);
     }
+
+    // This allows us to set the contribution to completed if
+    //   "Mark initial contribution as completed" is enabled in smartdebit settings
+    $params['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
 
     $contributionParams['receive_date'] = $params['start_date'];
     $contributionParams['trxn_id'] = CRM_Smartdebit_DateUtils::getContributionTransactionId($params['trxn_id'], $params['start_date']);
@@ -827,8 +810,6 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
           $contributionParams['id'] = $params['contributionID'];
           // Receive date will be the date that the direct debit is taken, not today.
           $contributionParams['receive_date'] = $recurParams['start_date'];
-          // Set to pending or completed?
-          $contributionParams['contribution_status_id'] = self::getInitialContributionStatus(FALSE);
           civicrm_api3('Contribution', 'create', $contributionParams);
         }
 
@@ -866,7 +847,6 @@ class CRM_Core_Payment_Smartdebit extends CRM_Core_Payment {
         $contributionParams = [
           'contribution_recur_id' => $params['contribution_recur_id'],
           'contact_id' => $this->getContactId($params),
-          'contribution_status_id' => self::getInitialContributionStatus(FALSE),
           'is_test' => $params['is_test'],
         ];
         if (empty($params['contributionID'])) {
